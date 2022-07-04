@@ -1,0 +1,36 @@
+{
+  "name": "financial-tracker",
+  "version": "1.0.0",
+  "description": "track income and outcome",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "concurrently npm:watch-ts npm:server",
+    "test": "jest",
+    "watch-ts": "tsc -w",
+    "server": "nodemon dist/index.js"
+  },
+  "keywords": [
+    "financial",
+    "mern"
+  ],
+  "author": "Levi Indrajaya Sutantio",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "express": "^4.18.1",
+    "express-validator": "^6.14.2",
+    "helmet": "^5.1.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.4.2"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "@types/express": "^4.17.13",
+    "@types/jsonwebtoken": "^8.5.8",
+    "@types/node": "^18.0.1",
+    "concurrently": "^7.2.2",
+    "dotenv": "^16.0.1",
+    "nodemon": "^2.0.18",
+    "typescript": "^4.7.4"
+  }
+}
