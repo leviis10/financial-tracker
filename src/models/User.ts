@@ -75,6 +75,7 @@ userSchema.statics.findByCredentials = async function (
 userSchema.methods.generateToken = function () {
   const token = jwt.sign({ id: this.id }, process.env.JWT_SECRET);
   this.tokens.push(token);
+  return token;
 };
 
 const User = mongoose.model<IUser, UserModel>("User", userSchema);

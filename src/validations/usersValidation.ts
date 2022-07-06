@@ -10,6 +10,20 @@ export const userRegistrationSchema = checkSchema({
   password: {
     in: ["body"],
     isStrongPassword: true,
-    errorMessage: "Please provide a stronger password",
+    errorMessage:
+      "Password must at least 8 characters length and contain lowercase, uppercase, number, symbols",
+  },
+});
+
+export const userLoginSchema = checkSchema({
+  email: {
+    in: ["body"],
+    notEmpty: true,
+    errorMessage: "Please provide an email",
+  },
+  password: {
+    in: ["body"],
+    notEmpty: true,
+    errorMessage: "Please provide a password",
   },
 });
