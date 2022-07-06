@@ -12,7 +12,7 @@ interface UserCredentials {
   password: string;
 }
 
-interface IUser {
+export interface IUser {
   email: string;
   password: string;
   tokens: string[];
@@ -20,8 +20,8 @@ interface IUser {
   updatedAt: Date;
 }
 
-interface UserMethods {
-  generateToken(): void;
+export interface UserMethods {
+  generateToken(): string;
 }
 
 interface UserModel extends Model<IUser, {}, UserMethods> {
@@ -73,7 +73,7 @@ userSchema.statics.findByCredentials = async function (
 };
 
 userSchema.methods.generateToken = function () {
-  const token = jwt.sign({ id: this.id }, process.env.JWT_SECRET);
+  const token = jwt.sign({ _id: this.id }, process.env.JWT_SECRET);
   this.tokens.push(token);
   return token;
 };
