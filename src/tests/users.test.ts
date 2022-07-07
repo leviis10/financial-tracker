@@ -103,3 +103,21 @@ describe("User Login", () => {
     expect(lorem!.tokens.length).toBe(2);
   });
 });
+
+describe("User Logout", () => {
+  it("Should logout user", async () => {
+    const user = await User.findOne({ email: "lorem@gmail.com" });
+
+    const response = await request(app)
+      .post("/api/users/logout")
+      .set("Authorization", `Bearer ${user!.tokens[0]}`);
+
+    const userAfterResponse = await User.findOne({
+      email: "lorem@gmail.com",
+      tokens: user!.tokens[0],
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(userAfterResponse).toBeNull();
+  });
+});
