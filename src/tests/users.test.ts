@@ -121,3 +121,11 @@ describe("User Logout", () => {
     expect(userAfterResponse).toBeNull();
   });
 });
+
+describe("Getting current user information", () => {
+  it("Should response with current user information", async () => {
+    const response = await request(app).get("/api/users/me");
+
+    expect(response.body._id).not.toBeNull();
+  });
+});

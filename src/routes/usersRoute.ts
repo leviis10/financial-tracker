@@ -46,4 +46,8 @@ router.post(
   })
 );
 
+router.get("/me", isAuthenticated, (req, res) => {
+  res.send(req.user);
+});
+
 export default router;
