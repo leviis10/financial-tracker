@@ -78,6 +78,15 @@ userSchema.methods.generateToken = function () {
   return token;
 };
 
+userSchema.methods.toJSON = function () {
+  const userObj = this.toObject();
+
+  delete userObj.password;
+  delete userObj.tokens;
+
+  return userObj;
+};
+
 const User = mongoose.model<IUser, UserModel>("User", userSchema);
 
 export default User;
