@@ -1,8 +1,12 @@
 import express from "express";
-import User from "../models/User";
-import expressAsync from "../utils/expressAsync";
 import validateSchema from "../middlewares/validateSchema";
 import isAuthenticated from "../middlewares/isAuthenticated";
+import {
+  userRegister,
+  userLogin,
+  userLogout,
+  getUserProfile,
+} from "../controllers/userController";
 import {
   userRegistrationSchema,
   userLoginSchema,
@@ -10,44 +14,12 @@ import {
 
 const router = express.Router();
 
-router.post(
-  "/",
-  validateSchema(userRegistrationSchema),
-  expressAsync(async (req, res) => {
-    const user = new User(req.body);
-    const token = user.generateToken();
-    await user.save();
-    res.status(201).send({ user, token });
-  })
-);
+router.post("/", validateSchema(userRegistrationSchema), userRegister);
 
-router.post(
-  "/login",
-  validateSchema(userLoginSchema),
-  expressAsync(async (req, res) => {
-    const { email, password } = req.body;
-    const user = await User.findByCredentials({ email, password });
-    const token = user.generateToken();
-    await user.save();
-    res.send({ user, token });
-  })
-);
+router.post("/login", validateSchema(userLoginSchema), userLogin);
 
-router.post(
-  "/logout",
-  isAuthenticated,
-  expressAsync(async (req, res) => {
-    const currentToken = req.header("Authorization")!.replace("Bearer ", "");
-    req.user!.tokens = req.user!.tokens.filter(
-      (token) => token !== currentToken
-    );
-    await req.user!.save();
-    res.send({ message: "Logout success" });
-  })
-);
+router.post("/logout", isAuthenticated, userLogout);
 
-router.get("/me", isAuthenticated, (req, res) => {
-  res.send(req.user);
-});
+router.get("/me", isAuthenticated, getUserProfile);
 
 export default router;
