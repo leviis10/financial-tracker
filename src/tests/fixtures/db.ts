@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import User from "../../models/User";
+import Financial from "../../models/Financial";
 
 dotenv.config({
   path: path.join(__dirname, "..", "..", "..", "env", "test.env"),
@@ -51,6 +52,27 @@ export const user5 = new User({
 export async function connectDatabase() {
   try {
     await mongoose.connect(process.env.MONGO_URL);
+  } catch (err: any) {
+    throw new Error(err);
+  }
+}
+
+export async function clearDatabase() {
+  try {
+    await User.deleteMany({});
+    await Financial.deleteMany({});
+  } catch (err: any) {
+    throw new Error(err);
+  }
+}
+
+export async function fillUserCollection() {
+  try {
+    await user1.save();
+    await user2.save();
+    await user3.save();
+    await user4.save();
+    await user5.save();
   } catch (err: any) {
     throw new Error(err);
   }

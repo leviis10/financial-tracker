@@ -1,29 +1,27 @@
 import mongoose from "mongoose";
 import request from "supertest";
 import Financial from "../models/Financial";
-import User from "../models/User";
 import app from "../app";
-import { connectDatabase, user1, user2 } from "./fixtures/db";
+import {
+  connectDatabase,
+  fillUserCollection,
+  clearDatabase,
+  user1,
+  user2,
+} from "./fixtures/db";
 
 beforeAll(async () => {
   try {
-    // Connect to the Database
     await connectDatabase();
-
-    // Reset Database Collections
-    await User.deleteMany({});
-    await Financial.deleteMany({});
-
-    // Fill Database Collections
-    await user1.save();
-    await user2.save();
+    await clearDatabase();
+    await fillUserCollection();
   } catch (err: any) {
     console.error(err.message);
   }
 });
 
-afterAll(() => {
-  mongoose.connection.close();
+afterAll(async () => {
+  await mongoose.connection.close();
 });
 
 describe("Create new income", () => {

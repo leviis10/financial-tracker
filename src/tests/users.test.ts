@@ -2,23 +2,26 @@ import request from "supertest";
 import mongoose from "mongoose";
 import app from "../app";
 import User from "../models/User";
-import { connectDatabase, user1, user2 } from "./fixtures/db";
+import {
+  connectDatabase,
+  fillUserCollection,
+  clearDatabase,
+  user1,
+  user2,
+} from "./fixtures/db";
 
 beforeAll(async () => {
   try {
     await connectDatabase();
-
-    await User.deleteMany({});
-
-    await user1.save();
-    await user2.save();
+    await clearDatabase();
+    await fillUserCollection();
   } catch (err: any) {
     console.error(err.message);
   }
 });
 
-afterAll(() => {
-  mongoose.connection.close();
+afterAll(async () => {
+  await mongoose.connection.close();
 });
 
 describe("User Registration", () => {
