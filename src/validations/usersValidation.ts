@@ -5,6 +5,7 @@ export const userRegistrationSchema = checkSchema({
     in: ["body"],
     isEmail: true,
     normalizeEmail: true,
+    trim: true,
     errorMessage: "Please provide a valid email address",
   },
   password: {
