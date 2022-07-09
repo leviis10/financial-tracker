@@ -10,44 +10,74 @@ dotenv.config({
 });
 
 const user1Id = new mongoose.Types.ObjectId();
-export const user1 = new User({
+export const user1 = {
   _id: user1Id,
   email: "user1@gmail.com",
   password: "@User1123",
   tokens: [jwt.sign({ _id: user1Id }, process.env.JWT_SECRET)],
-});
+};
 
 const user2Id = new mongoose.Types.ObjectId();
-export const user2 = new User({
+export const user2 = {
   _id: user2Id,
   email: "user2@gmail.com",
   password: "@User2123",
   tokens: [jwt.sign({ _id: user2Id }, process.env.JWT_SECRET)],
-});
+};
 
-const user3Id = new mongoose.Types.ObjectId();
-export const user3 = new User({
-  _id: user3Id,
-  email: "user3@gmail.com",
-  password: "@User3123",
-  tokens: [jwt.sign({ _id: user3Id }, process.env.JWT_SECRET)],
-});
+const financialRecord1Id = new mongoose.Types.ObjectId();
+export const financialRecord1 = {
+  _id: financialRecord1Id,
+  type: "income",
+  value: 10000,
+  description: "first financial record for user1",
+  user: user1Id,
+};
 
-const user4Id = new mongoose.Types.ObjectId();
-export const user4 = new User({
-  _id: user4Id,
-  email: "user4@gmail.com",
-  password: "@User4123",
-  tokens: [jwt.sign({ _id: user4Id }, process.env.JWT_SECRET)],
-});
+const financialRecord2Id = new mongoose.Types.ObjectId();
+export const financialRecord2 = {
+  _id: financialRecord2Id,
+  type: "income",
+  value: 20000,
+  description: "second financial record for user1",
+  user: user1Id,
+};
 
-const user5Id = new mongoose.Types.ObjectId();
-export const user5 = new User({
-  _id: user5Id,
-  email: "user5@gmail.com",
-  password: "@User5123",
-  tokens: [jwt.sign({ _id: user5Id }, process.env.JWT_SECRET)],
-});
+const financialRecord3Id = new mongoose.Types.ObjectId();
+export const financialRecord3 = {
+  _id: financialRecord3Id,
+  type: "income",
+  value: 30000,
+  description: "third financial record for user1",
+  user: user1Id,
+};
+
+const financialRecord4Id = new mongoose.Types.ObjectId();
+export const financialRecord4 = {
+  _id: financialRecord4Id,
+  type: "outcome",
+  value: 10000,
+  description: "first financial record for user2",
+  user: user2Id,
+};
+
+const financialRecord5Id = new mongoose.Types.ObjectId();
+export const financialRecord5 = {
+  _id: financialRecord5Id,
+  type: "outcome",
+  value: 20000,
+  description: "second financial record for user2",
+  user: user2Id,
+};
+
+const financialRecord6Id = new mongoose.Types.ObjectId();
+export const financialRecord6 = {
+  _id: financialRecord6Id,
+  type: "outcome",
+  value: 30000,
+  description: "third financial record for user2",
+  user: user2Id,
+};
 
 export async function connectDatabase() {
   try {
@@ -68,11 +98,21 @@ export async function clearDatabase() {
 
 export async function fillUserCollection() {
   try {
-    await user1.save();
-    await user2.save();
-    await user3.save();
-    await user4.save();
-    await user5.save();
+    await new User(user1).save();
+    await new User(user2).save();
+  } catch (err: any) {
+    throw new Error(err);
+  }
+}
+
+export async function fillFinancialCollection() {
+  try {
+    await new Financial(financialRecord1).save();
+    await new Financial(financialRecord2).save();
+    await new Financial(financialRecord3).save();
+    await new Financial(financialRecord4).save();
+    await new Financial(financialRecord5).save();
+    await new Financial(financialRecord6).save();
   } catch (err: any) {
     throw new Error(err);
   }

@@ -1,5 +1,8 @@
 import express from "express";
-import { createNewFinancial } from "../controllers/financialController";
+import {
+  createNewFinancial,
+  getUserFinancialRecords,
+} from "../controllers/financialController";
 import isAuthenticated from "../middlewares/isAuthenticated";
 import validateSchema from "../middlewares/validateSchema";
 import { newFinancialSchema } from "../validations/financialsValidation";
@@ -14,5 +17,7 @@ router.post(
   validateSchema(newFinancialSchema),
   createNewFinancial
 );
+
+router.get("/", isAuthenticated, getUserFinancialRecords);
 
 export default router;

@@ -7,110 +7,244 @@ import {
   fillUserCollection,
   clearDatabase,
   user1,
-  user2,
 } from "./fixtures/db";
 
 beforeAll(async () => {
   try {
     await connectDatabase();
-    await clearDatabase();
-    await fillUserCollection();
   } catch (err: any) {
     console.error(err.message);
   }
 });
 
-afterAll(async () => {
-  await mongoose.connection.close();
+afterAll(() => {
+  mongoose.connection.close();
 });
 
 describe("User Registration", () => {
-  it("Should success register a user with valid email and password", async () => {
-    const response = await request(app)
+  beforeAll(async () => {
+    try {
+      await clearDatabase();
+      await fillUserCollection();
+    } catch (err: any) {
+      console.error(err.message);
+    }
+  });
+
+  test("Should fail because there is no body", async () => {
+    const res = await request(app).post("/api/users");
+
+    expect(res.statusCode).toBe(400);
+  });
+
+  test("Should fail because there is no password", async () => {
+    const res = await request(app)
+      .post("/api/users")
+      .send({ email: "lorem@gmail.com" });
+
+    const user = await User.findOne({ email: "lorem@gmail.com" });
+
+    expect(res.statusCode).toBe(400);
+    expect(user).toBeNull();
+  });
+
+  test("Should fail because password in not strong enought", async () => {
+    const res = await request(app)
+      .post("/api/users")
+      .send({ email: "lorem@gmail.com", password: "12345678" });
+
+    const user = await User.findOne({ email: "lorem@gmail.com" });
+
+    expect(res.statusCode).toBe(400);
+    expect(user).toBeNull();
+  });
+
+  test("Should fail because there is no email", async () => {
+    const res = await request(app)
+      .post("/api/users")
+      .send({ password: "@Lorem123" });
+
+    expect(res.statusCode).toBe(400);
+  });
+
+  test("Should fail because email is invalid", async () => {
+    const res = await request(app)
+      .post("/api/users")
+      .send({ email: "lorem@gmailcom", password: "@Lorem123" });
+
+    const user = await User.findOne({ email: "lorem@gmailcom" });
+
+    expect(res.statusCode).toBe(400);
+    expect(user).toBeNull();
+  });
+
+  test("Should fail because user is already exists", async () => {
+    const res = await request(app)
+      .post("/api/users")
+      .send({ email: "user1@gmail.com", password: "@User112345678" });
+
+    const users = await User.find({ email: "user1@gmail.com" });
+
+    expect(res.statusCode).toBe(500);
+    expect(users!.length).toBe(1);
+  });
+
+  test("Should success because valid email and strong password", async () => {
+    const res = await request(app)
       .post("/api/users")
       .send({ email: "lorem@gmail.com", password: "@Lorem123" });
 
     const user = await User.findOne({ email: "lorem@gmail.com" });
 
-    expect(response.statusCode).toBe(201);
+    expect(res.statusCode).toBe(201);
     expect(user).not.toBeNull();
-  });
-
-  it("Should fail register a user with the same email", async () => {
-    const response = await request(app)
-      .post("/api/users")
-      .send({ email: "lorem@gmail.com", password: "@Lorem123" });
-
-    const users = await User.find({ email: "user1@gmail.com" });
-
-    expect(response.statusCode).toBe(500);
-    expect(users.length).toBe(1);
-  });
-
-  it("Should fail register a user with invalid email", async () => {
-    const response = await request(app)
-      .post("/api/users")
-      .send({ email: "dolor@gmailcom", password: "@Dolor123" });
-
-    const user = await User.findOne({ email: "dolor@gmailcom" });
-
-    expect(response.statusCode).toBe(400);
-    expect(user).toBeNull();
-  });
-
-  it("Should fail register a user with weak password", async () => {
-    const response = await request(app)
-      .post("/api/users")
-      .send({ email: "dolor@gmail.com", password: "12345678" });
-
-    const user = await User.findOne({ email: "dolor@gmail.com" });
-
-    expect(response.statusCode).toBe(400);
-    expect(user).toBeNull();
+    expect(user!.password).not.toBe("@Lorem123");
+    expect(user!.tokens.length).toBe(1);
   });
 });
 
 describe("User Login", () => {
-  it("Should log user in with correct credentials", async () => {
-    const response = await request(app)
+  beforeAll(async () => {
+    try {
+      await clearDatabase();
+      await fillUserCollection();
+    } catch (err: any) {
+      console.error(err.message);
+    }
+  });
+
+  test("Should fail because there is no body", async () => {
+    const res = await request(app).post("/api/users/login");
+
+    expect(res.statusCode).toBe(400);
+  });
+
+  test("Should fail because there is no email", async () => {
+    const res = await request(app)
+      .post("/api/users/login")
+      .send({ password: "@User1123" });
+
+    expect(res.statusCode).toBe(400);
+  });
+
+  test("Should fail because there is no password", async () => {
+    const res = await request(app)
+      .post("/api/users/login")
+      .send({ email: "user1@gmail.com" });
+
+    const user = await User.findOne({ email: "user1@gmail.com" });
+
+    expect(res.statusCode).toBe(400);
+    expect(user!.tokens.length).toBe(1);
+  });
+
+  test("Should fail because email is wrong", async () => {
+    const res = await request(app)
+      .post("/api/users/login")
+      .send({ email: "user1@gmail.comm", password: "@User1123" });
+
+    expect(res.statusCode).toBe(401);
+  });
+
+  test("Should fail because password is wrong", async () => {
+    const res = await request(app)
+      .post("/api/users/login")
+      .send({ email: "user1@gmail.com", password: "@User11233" });
+
+    const user = await User.findOne({ email: "user1@gmail.com" });
+
+    expect(res.statusCode).toBe(401);
+    expect(user!.tokens.length).toBe(1);
+  });
+
+  test("Should success because valid email and password", async () => {
+    const res = await request(app)
       .post("/api/users/login")
       .send({ email: "user1@gmail.com", password: "@User1123" });
 
-    expect(response.statusCode).toBe(200);
-    expect(response.body.user._id).toBe(user1.id);
-  });
+    const user = await User.findOne({ email: "user1@gmail.com" });
 
-  it("Should not log user in when password credentials is wrong", async () => {
-    const response = await request(app)
-      .post("/api/users/login")
-      .send({ email: "user2@gmail.com", password: "ThisIsInvalidPassword" });
-
-    const user = await User.findOne({ email: "user2@gmail.com" });
-
-    expect(response.statusCode).toBe(401);
-    expect(user!.tokens.slice(-1).toString()).toBe(user2.tokens[0]);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.user._id).toBe(user!.id);
+    expect(user!.tokens.length).toBe(2);
   });
 });
 
 describe("User Logout", () => {
-  it("Should logout user", async () => {
-    const response = await request(app)
+  beforeAll(async () => {
+    try {
+      await clearDatabase();
+      await fillUserCollection();
+    } catch (err: any) {
+      console.error(err.message);
+    }
+  });
+
+  test("Should fail because token authorization in not set", async () => {
+    const res = await request(app).post("/api/users/logout");
+
+    expect(res.statusCode).toBe(401);
+  });
+
+  test("Should fail because token authorization is not belong to any user", async () => {
+    const res = await request(app)
       .post("/api/users/logout")
-      .set("Authorization", `Bearer ${user2.tokens[0]}`);
+      .set(
+        "Authorization",
+        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MmM5MzYyZjVmMjBiZjQ2YmZiYzg3NmYiLCJpYXQiOjE2NTczNTM3NzV9.5IW8s4d8XhusI_4hEn7Pix01rL-VpVfbX54OBdxFrgc"
+      );
 
-    const user = await User.findOne({ email: "user2@gmail.com" });
+    const user = await User.findOne({ email: "user1@gmail.com" });
 
-    expect(response.statusCode).toBe(200);
+    expect(res.statusCode).toBe(401);
+    expect(user!.tokens.length).toBe(1);
+  });
+
+  test("Should success because token authorization is valid", async () => {
+    const res = await request(app)
+      .post("/api/users/logout")
+      .set("Authorization", `Bearer ${user1.tokens[0]}`);
+
+    const user = await User.findOne({ email: "user1@gmail.com" });
+
+    expect(res.statusCode).toBe(200);
     expect(user!.tokens.length).toBe(0);
   });
 });
 
-describe("Getting current user information", () => {
-  it("Should response with current user information", async () => {
-    const response = await request(app)
+describe("Get User Information", () => {
+  beforeAll(async () => {
+    try {
+      await clearDatabase();
+      await fillUserCollection();
+    } catch (err: any) {
+      console.error(err.message);
+    }
+  });
+
+  test("Should fail because there is no autorization token", async () => {
+    const res = await request(app).get("/api/users/me");
+
+    expect(res.statusCode).toBe(401);
+  });
+
+  test("Should fail because authorization token not belong to any user", async () => {
+    const res = await request(app)
+      .get("/api/users/me")
+      .set(
+        "Authorization",
+        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MmM5MzYyZjVmMjBiZjQ2YmZiYzg3NmYiLCJpYXQiOjE2NTczNTM3NzV9.5IW8s4d8XhusI_4hEn7Pix01rL-VpVfbX54OBdxFrgc"
+      );
+
+    expect(res.statusCode).toBe(401);
+  });
+
+  test("Should success because authorization token is valid", async () => {
+    const res = await request(app)
       .get("/api/users/me")
       .set("Authorization", `Bearer ${user1.tokens[0]}`);
 
-    expect(response.body._id).toBe(user1.id);
+    expect(res.statusCode).toBe(200);
+    expect(res.body._id).toBe(user1._id.toString());
   });
 });

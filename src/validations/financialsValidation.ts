@@ -10,8 +10,8 @@ export const newFinancialSchema = checkSchema({
     in: ["body"],
     isArray: { negated: true },
     toFloat: true,
-    isFloat: true,
-    errorMessage: "value must be a number",
+    isFloat: { options: { min: 0 } },
+    errorMessage: "value must be greater than or equal to 0",
   },
   description: {
     in: ["body"],

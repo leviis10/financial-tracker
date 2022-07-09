@@ -7,3 +7,8 @@ export const createNewFinancial = expressAsync(async (req, res) => {
   await financial.save();
   res.status(201).send(financial);
 });
+
+export const getUserFinancialRecords = expressAsync(async (req, res) => {
+  const financials = await Financial.find({ user: req.user!.id });
+  res.send(financials);
+});
