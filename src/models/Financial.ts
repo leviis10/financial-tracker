@@ -18,6 +18,7 @@ const financialSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
     ref: "User",
+    immutable: true,
   },
 });
 

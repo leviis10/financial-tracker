@@ -9,6 +9,10 @@ dotenv.config({
   path: path.join(__dirname, "..", "..", "..", "env", "test.env"),
 });
 
+export const anonymousToken =
+  "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MmM5MzYyZjVmMjBiZjQ2YmZiYzg3NmYiLCJpYXQiOjE2NTczNTM3NzV9.5IW8s4d8XhusI_4hEn7Pix01rL-VpVfbX54OBdxFrgc";
+export const anonymousFinancialRecordId = "62cb8a183c812bcfa72ad2b3";
+
 const user1Id = new mongoose.Types.ObjectId();
 export const user1 = {
   _id: user1Id,
@@ -26,7 +30,7 @@ export const user2 = {
 };
 
 const financialRecord1Id = new mongoose.Types.ObjectId();
-export const financialRecord1 = {
+export const user1FinancialRecord1 = {
   _id: financialRecord1Id,
   type: "income",
   value: 10000,
@@ -35,7 +39,7 @@ export const financialRecord1 = {
 };
 
 const financialRecord2Id = new mongoose.Types.ObjectId();
-export const financialRecord2 = {
+export const user1FinancialRecord2 = {
   _id: financialRecord2Id,
   type: "income",
   value: 20000,
@@ -44,7 +48,7 @@ export const financialRecord2 = {
 };
 
 const financialRecord3Id = new mongoose.Types.ObjectId();
-export const financialRecord3 = {
+export const user1FinancialRecord3 = {
   _id: financialRecord3Id,
   type: "income",
   value: 30000,
@@ -53,7 +57,7 @@ export const financialRecord3 = {
 };
 
 const financialRecord4Id = new mongoose.Types.ObjectId();
-export const financialRecord4 = {
+export const user2FinancialRecord1 = {
   _id: financialRecord4Id,
   type: "outcome",
   value: 10000,
@@ -62,7 +66,7 @@ export const financialRecord4 = {
 };
 
 const financialRecord5Id = new mongoose.Types.ObjectId();
-export const financialRecord5 = {
+export const user2FinancialRecord2 = {
   _id: financialRecord5Id,
   type: "outcome",
   value: 20000,
@@ -71,7 +75,7 @@ export const financialRecord5 = {
 };
 
 const financialRecord6Id = new mongoose.Types.ObjectId();
-export const financialRecord6 = {
+export const user2FinancialRecord3 = {
   _id: financialRecord6Id,
   type: "outcome",
   value: 30000,
@@ -107,12 +111,12 @@ export async function fillUserCollection() {
 
 export async function fillFinancialCollection() {
   try {
-    await new Financial(financialRecord1).save();
-    await new Financial(financialRecord2).save();
-    await new Financial(financialRecord3).save();
-    await new Financial(financialRecord4).save();
-    await new Financial(financialRecord5).save();
-    await new Financial(financialRecord6).save();
+    await new Financial(user1FinancialRecord1).save();
+    await new Financial(user1FinancialRecord2).save();
+    await new Financial(user1FinancialRecord3).save();
+    await new Financial(user2FinancialRecord1).save();
+    await new Financial(user2FinancialRecord2).save();
+    await new Financial(user2FinancialRecord3).save();
   } catch (err: any) {
     throw new Error(err);
   }

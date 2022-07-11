@@ -7,6 +7,7 @@ import {
   fillUserCollection,
   clearDatabase,
   user1,
+  anonymousToken,
 } from "./fixtures/db";
 
 beforeAll(async () => {
@@ -189,10 +190,7 @@ describe("User Logout", () => {
   test("Should fail because token authorization is not belong to any user", async () => {
     const res = await request(app)
       .post("/api/users/logout")
-      .set(
-        "Authorization",
-        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MmM5MzYyZjVmMjBiZjQ2YmZiYzg3NmYiLCJpYXQiOjE2NTczNTM3NzV9.5IW8s4d8XhusI_4hEn7Pix01rL-VpVfbX54OBdxFrgc"
-      );
+      .set("Authorization", anonymousToken);
 
     const user = await User.findOne({ email: "user1@gmail.com" });
 
@@ -231,10 +229,7 @@ describe("Get User Information", () => {
   test("Should fail because authorization token not belong to any user", async () => {
     const res = await request(app)
       .get("/api/users/me")
-      .set(
-        "Authorization",
-        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MmM5MzYyZjVmMjBiZjQ2YmZiYzg3NmYiLCJpYXQiOjE2NTczNTM3NzV9.5IW8s4d8XhusI_4hEn7Pix01rL-VpVfbX54OBdxFrgc"
-      );
+      .set("Authorization", anonymousToken);
 
     expect(res.statusCode).toBe(401);
   });

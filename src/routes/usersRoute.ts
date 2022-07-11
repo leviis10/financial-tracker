@@ -11,6 +11,8 @@ import {
   userRegistrationSchema,
   userLoginSchema,
 } from "../validations/usersValidation";
+import expressAsync from "../utils/expressAsync";
+import User from "../models/User";
 
 const router = express.Router();
 
