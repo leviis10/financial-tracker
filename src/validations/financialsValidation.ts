@@ -42,3 +42,11 @@ export const updateFinancialSchema = checkSchema({
     errorMessage: "Can't update the user id",
   },
 });
+
+export const financialRecordId = checkSchema({
+  id: {
+    in: ["params"],
+    isMongoId: true,
+    errorMessage: "Invalid ID",
+  },
+});

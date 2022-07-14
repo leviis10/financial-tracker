@@ -1,35 +1,37 @@
 import express from "express";
 import {
   createNewFinancial,
+  deleteFinancialRecord,
   getUserFinancialRecords,
   updateFinancialRecord,
 } from "../controllers/financialController";
 import isAuthenticated from "../middlewares/isAuthenticated";
 import validateSchema from "../middlewares/validateSchema";
 import {
+  financialRecordId,
   newFinancialSchema,
   updateFinancialSchema,
 } from "../validations/financialsValidation";
-import Financial from "../models/Financial";
-import expressAsync from "../utils/expressAsync";
-import ExpressError from "../utils/ExpressError";
 
 const router = express.Router();
 
-router.post(
-  "/",
-  isAuthenticated,
-  validateSchema(newFinancialSchema),
-  createNewFinancial
-);
+router
+  .route("/")
+  .post(isAuthenticated, validateSchema(newFinancialSchema), createNewFinancial)
+  .get(isAuthenticated, getUserFinancialRecords);
 
-router.get("/", isAuthenticated, getUserFinancialRecords);
-
-router.patch(
-  "/:id",
-  isAuthenticated,
-  validateSchema(updateFinancialSchema),
-  updateFinancialRecord
-);
+router
+  .route("/:id")
+  .patch(
+    validateSchema(financialRecordId),
+    isAuthenticated,
+    validateSchema(updateFinancialSchema),
+    updateFinancialRecord
+  )
+  .delete(
+    validateSchema(financialRecordId),
+    isAuthenticated,
+    deleteFinancialRecord
+  );
 
 export default router;

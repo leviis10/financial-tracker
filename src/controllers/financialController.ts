@@ -29,3 +29,18 @@ export const updateFinancialRecord = expressAsync(async (req, res) => {
 
   res.send(financialRecord);
 });
+
+export const deleteFinancialRecord = expressAsync(async (req, res) => {
+  const financialRecord = await Financial.deleteOne({
+    _id: req.params.id,
+    user: req.user,
+  });
+  if (financialRecord.deletedCount === 0) {
+    throw new ExpressError(
+      "No financial record found or this financial record is not yours",
+      404
+    );
+  }
+
+  res.send({ message: "Financial Record Deleted" });
+});

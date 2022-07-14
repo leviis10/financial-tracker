@@ -31,12 +31,8 @@ afterAll(() => {
 
 describe("Create New Financial Records", () => {
   beforeAll(async () => {
-    try {
-      await clearDatabase();
-      await fillUserCollection();
-    } catch (err: any) {
-      console.error(err.message);
-    }
+    await clearDatabase();
+    await fillUserCollection();
   });
 
   test("Should fail because there is no authorization token", async () => {
@@ -274,13 +270,9 @@ describe("Create New Financial Records", () => {
 
 describe("Get User Financial Records", () => {
   beforeAll(async () => {
-    try {
-      await clearDatabase();
-      await fillUserCollection();
-      await fillFinancialCollection();
-    } catch (err: any) {
-      console.error(err.message);
-    }
+    await clearDatabase();
+    await fillUserCollection();
+    await fillFinancialCollection();
   });
 
   test("Should fail because there is no authorization token", async () => {
@@ -312,13 +304,9 @@ describe("Get User Financial Records", () => {
 
 describe("Edit financial records", () => {
   beforeAll(async () => {
-    try {
-      await clearDatabase();
-      await fillUserCollection();
-      await fillFinancialCollection();
-    } catch (err: any) {
-      console.error(err.message);
-    }
+    await clearDatabase();
+    await fillUserCollection();
+    await fillFinancialCollection();
   });
 
   test("Should fail because there is no authentication token", async () => {
@@ -593,5 +581,73 @@ describe("Edit financial records", () => {
 
     expect(res.statusCode).toBe(200);
     expect(financialRecord!.description).not.toBe("<>");
+  });
+});
+
+describe("Delete Financial Record", () => {
+  beforeAll(async () => {
+    await clearDatabase();
+    await fillUserCollection();
+    await fillFinancialCollection();
+  });
+
+  test("Should fail because the parameter is invalid mongoID", async () => {
+    const res = await request(app)
+      .delete("/api/financials/invalidid")
+      .set("Authorization", `Bearer ${user1.tokens[0]}`);
+
+    expect(res.statusCode).toBe(400);
+  });
+
+  test("Should fail because there is no authentication token", async () => {
+    const res = await request(app).delete(
+      `/api/financials/${user1FinancialRecord1._id.toString()}`
+    );
+
+    const financialRecord = await Financial.findById(user1FinancialRecord1._id);
+
+    expect(res.statusCode).toBe(401);
+    expect(financialRecord).not.toBeNull();
+  });
+
+  test("Should fail because auth token in not belong to any user", async () => {
+    const res = await request(app)
+      .delete(`/api/financials/${user1FinancialRecord1._id.toString()}`)
+      .set("Authorization", anonymousToken);
+
+    const financialRecord = await Financial.findById(user1FinancialRecord1._id);
+
+    expect(res.statusCode).toBe(401);
+    expect(financialRecord).not.toBeNull();
+  });
+
+  test("Should fail because there is no financial record", async () => {
+    const res = await request(app)
+      .delete(`/api/financials/${anonymousFinancialRecordId}`)
+      .set("Authorization", `Bearer ${user1.tokens[0]}`);
+
+    expect(res.statusCode).toBe(404);
+  });
+
+  test("Should fail because try to delete other financial record user", async () => {
+    const res = await request(app)
+      .delete(`/api/financials/${user2FinancialRecord1._id.toString()}`)
+      .set("Authorization", `Bearer ${user1.tokens[0]}`);
+
+    const financialRecord = await Financial.findById(user2FinancialRecord1._id);
+
+    expect(res.statusCode).toBe(404);
+    expect(financialRecord).not.toBeNull();
+  });
+
+  test("Should success delete financial record with correct credentials", async () => {
+    const res = await request(app)
+      .delete(`/api/financials/${user1FinancialRecord1._id.toString()}`)
+      .set("Authorization", `Bearer ${user1.tokens[0]}`);
+
+    const financialRecord = await Financial.findById(user1FinancialRecord1._id);
+
+    expect(res.statusCode).toBe(200);
+    expect(financialRecord).toBeNull();
   });
 });

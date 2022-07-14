@@ -87,7 +87,7 @@ export async function connectDatabase() {
   try {
     await mongoose.connect(process.env.MONGO_URL);
   } catch (err: any) {
-    throw new Error(err);
+    console.error(err.message);
   }
 }
 
@@ -96,7 +96,7 @@ export async function clearDatabase() {
     await User.deleteMany({});
     await Financial.deleteMany({});
   } catch (err: any) {
-    throw new Error(err);
+    console.error(err.message);
   }
 }
 
@@ -105,7 +105,7 @@ export async function fillUserCollection() {
     await new User(user1).save();
     await new User(user2).save();
   } catch (err: any) {
-    throw new Error(err);
+    console.error(err.message);
   }
 }
 
@@ -118,6 +118,6 @@ export async function fillFinancialCollection() {
     await new Financial(user2FinancialRecord2).save();
     await new Financial(user2FinancialRecord3).save();
   } catch (err: any) {
-    throw new Error(err);
+    console.error(err.message);
   }
 }

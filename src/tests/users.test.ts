@@ -11,11 +11,7 @@ import {
 } from "./fixtures/db";
 
 beforeAll(async () => {
-  try {
-    await connectDatabase();
-  } catch (err: any) {
-    console.error(err.message);
-  }
+  await connectDatabase();
 });
 
 afterAll(() => {
@@ -24,12 +20,8 @@ afterAll(() => {
 
 describe("User Registration", () => {
   beforeAll(async () => {
-    try {
-      await clearDatabase();
-      await fillUserCollection();
-    } catch (err: any) {
-      console.error(err.message);
-    }
+    await clearDatabase();
+    await fillUserCollection();
   });
 
   test("Should fail because there is no body", async () => {
@@ -106,12 +98,8 @@ describe("User Registration", () => {
 
 describe("User Login", () => {
   beforeAll(async () => {
-    try {
-      await clearDatabase();
-      await fillUserCollection();
-    } catch (err: any) {
-      console.error(err.message);
-    }
+    await clearDatabase();
+    await fillUserCollection();
   });
 
   test("Should fail because there is no body", async () => {
@@ -173,12 +161,8 @@ describe("User Login", () => {
 
 describe("User Logout", () => {
   beforeAll(async () => {
-    try {
-      await clearDatabase();
-      await fillUserCollection();
-    } catch (err: any) {
-      console.error(err.message);
-    }
+    await clearDatabase();
+    await fillUserCollection();
   });
 
   test("Should fail because token authorization in not set", async () => {
@@ -212,12 +196,8 @@ describe("User Logout", () => {
 
 describe("Get User Information", () => {
   beforeAll(async () => {
-    try {
-      await clearDatabase();
-      await fillUserCollection();
-    } catch (err: any) {
-      console.error(err.message);
-    }
+    await clearDatabase();
+    await fillUserCollection();
   });
 
   test("Should fail because there is no autorization token", async () => {
